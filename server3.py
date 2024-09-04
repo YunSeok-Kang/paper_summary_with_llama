@@ -9,9 +9,19 @@ import hashlib
 import time
 import fcntl
 import subprocess
+import yaml
 
 # 현재는 rock 개념을 이용하여 여러 프로세스의 race condition을 제어함
 # 그러나 봇이 요청을 받을 때, 이미 요청을 수행중인지 확인하고 그렇다면 그냥 무시하도록 하는 것이 좋을 것 같음
+
+# YAML 설정 파일 로드
+def load_config():
+    with open('config.yaml', 'r') as file:
+        config = yaml.safe_load(file)
+    return config
+
+# 설정 파일 불러오기
+config = load_config()
 
 app = Flask(__name__)
 
@@ -19,8 +29,17 @@ app = Flask(__name__)
 logging.basicConfig(filename='slack_bot.log', level=logging.INFO, format='%(asctime)s %(message)s')
 
 # Slack Bot Token 및 Signing Secret
-slack_token = os.environ.get("SLACK_BOT_TOKEN")
-slack_signing_secret = os.environ.get("SLACK_SIGNING_SECRET")
+slack_token = config['slack']['api_token']
+slack_signing_secret = config['slack']['signing_secret']
+
+if slack_token is None:
+    logging.error("Slack token is not set in config.yaml.")
+    abort(500, "Slack token is not set in config.yaml.")
+
+if slack_signing_secret is None:
+    logging.error("Slack signing secret is not set in config.yaml.")
+    abort(500, "Slack signing secret is not set in config.yaml.")
+
 client = WebClient(token=slack_token)
 
 def verify_slack_request(data, timestamp, slack_signature):
