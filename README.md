@@ -2,6 +2,9 @@
 
 해당 프로젝트는 Llama 3.1 모델을 이용하여 arxiv의 논문을 요약 후, 결과를 슬랙에 전송하는 프로젝트입니다.
 
+## Project
+Check out the [GitHub Project](https://github.com/users/YunSeok-Kang/projects/3) for task management and progress tracking.
+
 
 ## 준비
 해당 프로젝트를 실행시키기 위해서는, 아래와 같은 준비가 먼저 필요합니다.
