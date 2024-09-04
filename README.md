@@ -32,3 +32,7 @@ conda install --yes --file Meta-Llama-3.1-8B-Instruct/requirements.txt
 ```
 해당 패키지 설치 도중 `huggingface-hub==0.24.2, setuptools==72.0.0, torch==2.4.0`이 없다고 오류를 뱉을 수도 있는데, 이때 requirements.txt를 열어 세 개의 패키지를 주석처리해도 됨. 그 전 단계까지 잘 수행했다면, 세 개는 이미 모두 깔렸을 것이기 때문임.
 
+## 실행
+
+# 서버 실행
+``` `/opt/conda/envs/'본인의 conda 가상환경 이름'/bin/gunicorn -w 1 -b 0.0.0.0:3000 server3:app``
