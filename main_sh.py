@@ -1,5 +1,6 @@
 import json
 import argparse
+import yaml  # PyYAML 라이브러리 추가
 from llm.llama import LlamaTextGenerator
 from llm.llm_preprocess import build_llm_input
 from utils.arxiv_loader import get_html_experimental_link, get_paper_abstract_content, get_paper_full_content, get_paper_title
@@ -8,6 +9,11 @@ from slack_sdk import WebClient
 import pytz
 from datetime import datetime
 import os
+
+# 설정 파일 로드 함수 추가
+def load_config(config_file="config.yaml"):
+    with open(config_file, "r") as file:
+        return yaml.safe_load(file)
 
 def send_msg_to_slack(text_msg, slack_api_token, slack_channel_name):
     sc = WebClient(token=slack_api_token)
@@ -31,7 +37,7 @@ def parse_multiple_json_objects(json_string):
 
     return json_objects
 
-def save_summary_with_metadata(raw_summary, final_summary, paper_url, log_file_path="ai_summary_log.json"):
+def save_summary_with_metadata(raw_summary, final_summary, paper_url, log_file_path):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     summary_data = {
         "timestamp": timestamp,
@@ -57,18 +63,16 @@ def save_summary_with_metadata(raw_summary, final_summary, paper_url, log_file_p
         json.dump(data, log_file, ensure_ascii=False, indent=4)
 
 if __name__ == "__main__":
+    # 설정 파일 로드
+    config = load_config()
+
     parser = argparse.ArgumentParser(description="Paper summary script.")
-    parser.add_argument('--target_channel_name', type=str, required=True, help='Target Slack channel name.')
-    parser.add_argument('--slack_api_token', type=str, required=True, help='Slack API token.')
+    parser.add_argument('--target_channel_name', type=str, required=False, default=config['slack']['channel_name'], help='Target Slack channel name.')
+    parser.add_argument('--slack_api_token', type=str, required=False, default=config['slack']['api_token'], help='Slack API token.')
     parser.add_argument('--paper_url', type=str, required=True, help='URL of the paper to summarize.')
     
     args = parser.parse_args()
-    
-    # 전달된 인자들을 출력하여 확인
-    print("Target channel name:", args.target_channel_name)
-    print("Slack API token:", args.slack_api_token)
-    print("Paper URL:", args.paper_url)
-    
+
     paper_url = args.paper_url
     
     html_experimental_link = get_html_experimental_link(paper_url)
@@ -80,7 +84,7 @@ if __name__ == "__main__":
         
     paper_title = get_paper_title(paper_url)
     
-    model_id = "/root/Desktop/workspace/Yunseok/sub_projects/paper_summary/Meta-Llama-3.1-8B-Instruct"
+    model_id = config['paths']['model_id']
     text_generator = LlamaTextGenerator(model_id)
     
     summary = text_generator.generate_summary(input_text, temperature=0.5)
@@ -96,8 +100,8 @@ if __name__ == "__main__":
 url: {paper_url}
 \n""" + slack_message
     
-    save_summary_with_metadata(summary, summary, paper_url)
+    save_summary_with_metadata(summary, summary, paper_url, config['paths']['log_file_path'])
     
-    create_markdown_file(summary, sanitize_filename(paper_title), "./markdown_files")
+    create_markdown_file(summary, sanitize_filename(paper_title), config['paths']['markdown_dir'])
 
     send_msg_to_slack(slack_message, args.slack_api_token, args.target_channel_name)

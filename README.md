@@ -20,7 +20,7 @@ conda install pytorch==2.3.1 torchvision==0.18.1 torchaudio==2.3.1 pytorch-cuda=
 
 그 이후, 아래의 명령어를 통해 모든 패키지 설치
 ```
-pip install transformers Flask lxml bs4 pandas pre-commit requests slack-sdk
+pip install transformers Flask lxml bs4 pandas pre-commit requests slack-sdk pyyaml
 ```
 
 그리고 Llama 3.1 문서에 소개되어있던 requirements.txt를 설치(경로는 본인의 디렉토리 구조에 맞게!)
