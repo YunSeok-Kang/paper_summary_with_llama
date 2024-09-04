@@ -35,4 +35,4 @@ conda install --yes --file Meta-Llama-3.1-8B-Instruct/requirements.txt
 ## 실행
 
 # 서버 실행
-``` `/opt/conda/envs/'본인의 conda 가상환경 이름'/bin/gunicorn -w 1 -b 0.0.0.0:3000 server3:app``
+``` /opt/conda/envs/'본인의 conda 가상환경 이름'/bin/gunicorn -w 1 -b 0.0.0.0:3000 server3:app```
