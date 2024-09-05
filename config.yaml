@@ -6,5 +6,6 @@ paths:
   log_file_path: "ai_summary_log.json"
 
 slack:
-  api_token: "your-slack-api-token-here"  # 이 값은 환경 변수로 설정할 수도 있음
   channel_name: "논문요약테스트"
+  api_token: "api_token"
+  signing_secret: "signing_secret"
